@@ -1,0 +1,44 @@
+[
+  {
+    "id": "soma-groove",
+    "name": "SomaFM — Groove Salad",
+    "url": "https://icecast.somafm.com/groovesalad",
+    "genre": "chillout",
+    "country": "US"
+  },
+  {
+    "id": "soma-drone",
+    "name": "SomaFM — Drone Zone",
+    "url": "https://icecast.somafm.com/dronezone",
+    "genre": "ambient",
+    "country": "US"
+  },
+  {
+    "id": "jazz24",
+    "name": "KPLU/Jazz24",
+    "url": "https://live.wostreaming.net/direct/ppm-jazz24mp3-ibc1",
+    "genre": "jazz",
+    "country": "US"
+  },
+  {
+    "id": "bbc-radio3",
+    "name": "BBC Radio 3",
+    "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_radio_three",
+    "genre": "classical",
+    "country": "UK"
+  },
+  {
+    "id": "electro",
+    "name": "Electro Beats",
+    "url": "https://icecast.somafm.com/secret-agent",
+    "genre": "electronic",
+    "country": "US"
+  },
+  {
+    "id": "indie",
+    "name": "Indie Mix",
+    "url": "https://icecast.somafm.com/indiepop",
+    "genre": "indie",
+    "country": "US"
+  }
+]
