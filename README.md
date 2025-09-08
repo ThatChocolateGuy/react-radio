@@ -36,8 +36,14 @@ While this app doesn't have a traditional backend microservice architecture, its
 
 2. The "Browser Storage Service"
     - File: `src/lib/storage.ts`
-    - Code Block: The `storage` object with `getFavoriteIds` and `setFavoriteIds` methods.
-    - Concept: This acts as our database layer. It abstracts away the implementation details of how we're storing data (in this case, `localStorage`). If we decided to store favorites in a different way (like `sessionStorage` or an online database like Firebase), we would only need to update the methods inside this `storage` object. The rest of the application wouldn't need to change.
+    - Exports:
+        - `getFavoriteIds(): Set<string>` — returns the favorited station IDs as a Set
+        - `setFavoriteIds(ids: Set<string>): void` — persists the Set of IDs
+        - `getFavorites(): string[]` — back-compat helper that returns an array
+        - `setFavorites(list: string[]): void` — back-compat helper that accepts an array
+    - Notes:
+        - Stores under the key `rr_favorites_v1`; reads legacy `radio-favorites` for migration and clears it on save.
+    - Concept: This module is the data layer for favorites. If we switch storage (e.g., `sessionStorage` or a remote DB), we update only this file; the rest of the app remains unchanged.
 
 3. The "Recommendation Service"
     - File: `src/App.tsx`
