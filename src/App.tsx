@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchStations } from './services/stationService';
 import type { ServiceStation } from './types';
 
