@@ -1,21 +1,48 @@
-# react-radio
+# React Radio Streamer
 
-Tiny learning app: React + Vite + TypeScript streaming radio.
+This is a simple, single-page internet radio streaming application built with React, Vite, and TypeScript, and styled with Tailwind CSS.
 
-Features:
-- Play internet radio streams using the browser audio element
-- Favorite stations (stored in localStorage)
-- Simple recommendations based on favorite genres
-- Modular services that are easy to split into microservices later
+The primary goal of this project is to provide a clear and easy-to-understand codebase for learning purposes, demonstrating core React concepts while simulating a "microservice" architecture on the client side.
 
-Getting started:
-1. npm install
-2. npm run dev
-3. Open http://localhost:5173
+## How to Run This Project
 
-Notes:
-- Some public streams require CORS and may not play in the browser.
-- All user data is stored locally (localStorage).
-- To learn microservices: extract services/* to small servers (catalog, recommendation) that serve JSON endpoints.
+1. Prerequisites: You need to have Node.js (which includes npm) installed on your machine.
 
-License: MIT
+2. Unzip Files: Make sure all the generated files are in a single project folder.
+
+3. Install Dependencies: Open your terminal, navigate to the project folder, and run:
+   ```
+   npm install
+   ```
+
+4. Start the Development Server: Once the installation is complete, run:
+   ```
+   npm run dev
+   ```
+    Your browser should open to `http://localhost:5173` (or a similar address), and you will see the radio app running.
+
+## Learning Guide: A "Microservice" Approach
+
+While this app doesn't have a traditional backend microservice architecture, its code is structured to mimic that separation of concerns. This is a great way to organize frontend applications.
+
+1. The "Station Data Service"
+    - File: `src/App.tsx`
+    - Code Block: The `allStations` constant array.
+    - Concept: In a real-world application, this data would be fetched from a dedicated "Stations API". By keeping it as a simple, separate constant, we isolate our data source. If we wanted to switch to a real API, we would only need to change this one part of the code (e.g., replace the constant with a `useEffect` hook that calls `fetch`).
+
+2. The "Browser Storage Service"
+    - File: `src/App.tsx`
+    - Code Block: The `storage` object with `getFavoriteIds` and `setFavoriteIds` methods.
+    - Concept: This acts as our database layer. It abstracts away the implementation details of how we're storing data (in this case, `localStorage`). If we decided to store favorites in a different way (like `sessionStorage` or an online database like Firebase), we would only need to update the methods inside this `storage` object. The rest of the application wouldn't need to change.
+
+3. The "Recommendation Service"
+    - File: `src/App.tsx`
+    - Code Block: The `recommendedStations` variable calculated using the `useMemo` hook.
+    - Concept: This contains our business logic for generating recommendations. It's a "pure" function: it takes the list of all stations and the user's favorites as input and produces a list of recommendations as output. By isolating this logic, we can easily test it or make the recommendation algorithm more complex without affecting the UI or data-fetching parts of the app.
+
+4. The "UI / Client"
+    - File: src/App.tsx
+    - Code Block: The main `App` component's `return (...)` statement and the `StationList` sub-component.
+    - Concept: This is the presentation layer. It is responsible for displaying the data and capturing user input. It doesn't know how favorites are stored or how recommendations are calculated; it simply calls the appropriate functions (`handleToggleFavorite`, `onSelectStation`) and displays the data it's given (`allStations`, `recommendedStations`).
+
+By thinking about your app in these separate parts, your code becomes more organized, easier to debug, and simpler to upgrade over time.
