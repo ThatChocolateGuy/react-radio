@@ -21,4 +21,4 @@ Extract inline favorites storage from App into a reusable storage service. Adds 
 - [x] Backwards compatible change
 
 ### Demo
-![Favoriting stations demo](docs/favouriting_stations.gif)
+![Favoriting stations demo](/docs/favouriting_stations.gif)
