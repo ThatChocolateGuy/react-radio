@@ -35,7 +35,7 @@ While this app doesn't have a traditional backend microservice architecture, its
     - Concept: One module to own network calls, error handling, caching, and any station-related transformations. Call `fetchStations()` from your components (e.g., inside `useEffect`) instead of using a global `allStations` constant so the rest of the app doesn't need to change if the backend or auth changes.
 
 2. The "Browser Storage Service"
-    - File: `src/App.tsx`
+    - File: `src/lib/storage.ts`
     - Code Block: The `storage` object with `getFavoriteIds` and `setFavoriteIds` methods.
     - Concept: This acts as our database layer. It abstracts away the implementation details of how we're storing data (in this case, `localStorage`). If we decided to store favorites in a different way (like `sessionStorage` or an online database like Firebase), we would only need to update the methods inside this `storage` object. The rest of the application wouldn't need to change.
 
