@@ -35,7 +35,7 @@ export function setFavoriteIds(ids: Set<string>) {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(ids)));
     // Optionally clear legacy keys to avoid confusion
     for (const key of LEGACY_KEYS) {
-      try { localStorage.removeItem(key); } catch { /* noop */ }
+      try { localStorage.removeItem(key); } catch { /* ignore removal errors */ }
     }
   } catch {
     // ignore storage errors
