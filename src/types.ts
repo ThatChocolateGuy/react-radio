@@ -1,4 +1,13 @@
 // Primary station shape used across services/components
+export type Station = {
+  id: string;
+  name: string;
+  url: string;
+  genre: string;
+  country?: string;
+  favicon?: string;
+};
+
 export type ServiceStation = {
   id: string;
   name: string;

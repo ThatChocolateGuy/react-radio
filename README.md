@@ -46,3 +46,17 @@ While this app doesn't have a traditional backend microservice architecture, its
     - Concept: This is the presentation layer. It is responsible for displaying the data and capturing user input. It doesn't know how favorites are stored or how recommendations are calculated; it simply calls the appropriate functions (`handleToggleFavorite`, `onSelectStation`) and displays the data it's given (`allStations`, `recommendedStations`).
 
 By thinking about this app in these separate parts, code becomes more organized, easier to debug, and simpler to upgrade over time.
+
+## Contributing workflow (PR-first)
+
+To keep history clean and enable CI checks, use a PR-first workflow:
+
+1. Create a branch for your change:
+    - Example: `feat/short-description` or `fix/issue-id`
+2. Commit and push your work to your branch.
+3. Open a Pull Request to `main`.
+4. CI will run lint, typecheck, and build on your PR.
+5. Merge via Squash after approvals and green checks.
+
+Convenience: we use GitHub CLI. If you have `gh` installed and authenticated, you can run:
+- `gh pr create --fill --base main --head your-branch`
