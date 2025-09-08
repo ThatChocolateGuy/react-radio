@@ -60,3 +60,17 @@ To keep history clean and enable CI checks, use a PR-first workflow:
 
 Convenience: we use GitHub CLI. If you have `gh` installed and authenticated, you can run:
 - `gh pr create --fill --base main --head your-branch`
+
+## Deploying to GitHub Pages
+
+This repo is configured to auto-deploy to GitHub Pages on pushes to `main`.
+
+- Vite `base` is set to `/react-radio/` in `vite.config.ts` to serve assets from the correct subpath.
+- A workflow at `.github/workflows/deploy.yml` builds the app and publishes the `dist/` folder.
+
+Steps to enable on your fork:
+
+1. Push to `main` or manually run the workflow from the Actions tab.
+2. In your GitHub repo, go to Settings → Pages and ensure “Source: GitHub Actions”.
+3. Your site will be available at: `https://<your-username>.github.io/react-radio/`.
+
