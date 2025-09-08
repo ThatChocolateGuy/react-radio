@@ -21,4 +21,4 @@ Extract inline favorites storage from App into a reusable storage service. Adds 
 - [x] Backwards compatible change
 
 ### Demo
-![Favoriting stations demo](/docs/favouriting_stations.gif)
+![Favoriting stations demo](https://github.com/ThatChocolateGuy/react-radio/blob/6b188a578cab85c17b88b04b6c9ec0b100b0445f/docs/favouriting_stations.gif?raw=true)
