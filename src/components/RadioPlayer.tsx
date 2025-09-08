@@ -12,7 +12,6 @@ export default function RadioPlayer({ station }: { station: Station | null }) {
       audioRef.current.preload = "none";
     }
     const audio = audioRef.current!;
-    audio.volume = volume;
 
     if (station) {
       audio.src = station.url;
