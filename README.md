@@ -45,4 +45,4 @@ While this app doesn't have a traditional backend microservice architecture, its
     - Code Block: The main `App` component's `return (...)` statement and the `StationList` sub-component.
     - Concept: This is the presentation layer. It is responsible for displaying the data and capturing user input. It doesn't know how favorites are stored or how recommendations are calculated; it simply calls the appropriate functions (`handleToggleFavorite`, `onSelectStation`) and displays the data it's given (`allStations`, `recommendedStations`).
 
-By thinking about your app in these separate parts, your code becomes more organized, easier to debug, and simpler to upgrade over time.
+By thinking about this app in these separate parts, code becomes more organized, easier to debug, and simpler to upgrade over time.
