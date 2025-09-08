@@ -26,9 +26,13 @@ The primary goal of this project is to provide a clear and easy-to-understand co
 While this app doesn't have a traditional backend microservice architecture, its code is structured to mimic that separation of concerns. This is a great way to organize frontend applications.
 
 1. The "Station Data Service"
-    - File: `src/App.tsx`
-    - Code Block: The `allStations` constant array.
-    - Concept: In a real-world application, this data would be fetched from a dedicated "Stations API". By keeping it as a simple, separate constant, we isolate our data source. If we wanted to switch to a real API, we would only need to change this one part of the code (e.g., replace the constant with a `useEffect` hook that calls `fetch`).
+    - File: `src/services/stationService.ts`
+    - Exports (examples):
+        - `export async function fetchStations(): Promise<Station[]>` — fetches the stations API, throws on HTTP errors, returns parsed JSON.
+        - `export function getCachedStations(): Station[]` — returns an in-memory cache or the fallback `allStations`.
+        - `export async function getStationById(id: string): Promise<Station | undefined>` — finds a single station (from cache or by fetching).
+        - `export const allStations: Station[]` — a small local fallback dataset used when network calls fail or for quick local dev.
+    - Concept: One module to own network calls, error handling, caching, and any station-related transformations. Call `fetchStations()` from your components (e.g., inside `useEffect`) instead of using a global `allStations` constant so the rest of the app doesn't need to change if the backend or auth changes.
 
 2. The "Browser Storage Service"
     - File: `src/App.tsx`

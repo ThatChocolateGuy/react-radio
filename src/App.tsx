@@ -1,33 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { fetchStations } from './services/stationService';
 import type { ServiceStation } from './types';
+import { getFavoriteIds as storageGetFavoriteIds, setFavoriteIds as storageSetFavoriteIds } from './lib/storage';
 
 type Station = ServiceStation;
-
-//===========//
-// --- 3. "BROWSER STORAGE MICROSERVICE" --- //
-// This section simulates a service that handles data persistence. Instead of a
-// database, we use the browser's `localStorage`. These helper functions
-// provide a clean way to get and set favorite station IDs.
-//===========//
-const storage = {
-  getFavoriteIds: (): Set<string> => {
-    try {
-      const item = localStorage.getItem('radio-favorites');
-      return item ? new Set(JSON.parse(item)) : new Set();
-    } catch (error) {
-      console.error("Error reading favorites from localStorage", error);
-      return new Set();
-    }
-  },
-  setFavoriteIds: (ids: Set<string>) => {
-    try {
-      localStorage.setItem('radio-favorites', JSON.stringify(Array.from(ids)));
-    } catch (error) {
-      console.error("Error saving favorites to localStorage", error);
-    }
-  },
-};
 
 //===========//
 // --- 4. UI ICON COMPONENTS --- //
@@ -50,15 +26,13 @@ const StarIcon = ({ className, isFilled }: { className?: string; isFilled: boole
 // storage, state, and UI.
 //===========//
 export default function App() {
-  // Load stations from the service
+  // --- STATE MANAGEMENT --- //
   const [allStations, setAllStations] = useState<Station[]>([]);
   const [loadingStations, setLoadingStations] = useState(true);
-  // --- STATE MANAGEMENT --- //
-  // `useState` is a React Hook to hold component state.
   const [currentStation, setCurrentStation] = useState<Station | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   // We initialize favorites by reading from our "storage service".
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(storage.getFavoriteIds());
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(storageGetFavoriteIds());
 
   // `useRef` is used to get a direct reference to an HTML element, in this
   // case, the <audio> tag. This lets us control it programmatically.
@@ -135,7 +109,7 @@ export default function App() {
     }
     setFavoriteIds(newFavoriteIds);
     // Persist the change to our "storage service".
-    storage.setFavoriteIds(newFavoriteIds);
+    storageSetFavoriteIds(newFavoriteIds);
   };
   
   // --- RENDER --- //
