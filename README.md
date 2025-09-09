@@ -26,14 +26,24 @@ The primary goal of this project is to provide a clear and easy-to-understand co
 While this app doesn't have a traditional backend microservice architecture, its code is structured to mimic that separation of concerns. This is a great way to organize frontend applications.
 
 1. The "Station Data Service"
-    - File: `src/App.tsx`
-    - Code Block: The `allStations` constant array.
-    - Concept: In a real-world application, this data would be fetched from a dedicated "Stations API". By keeping it as a simple, separate constant, we isolate our data source. If we wanted to switch to a real API, we would only need to change this one part of the code (e.g., replace the constant with a `useEffect` hook that calls `fetch`).
+    - File: `src/services/stationService.ts`
+    - Exports (examples):
+        - `export async function fetchStations(): Promise<Station[]>` — fetches the stations API, throws on HTTP errors, returns parsed JSON.
+        - `export function getCachedStations(): Station[]` — returns an in-memory cache or the fallback `allStations`.
+        - `export async function getStationById(id: string): Promise<Station | undefined>` — finds a single station (from cache or by fetching).
+        - `export const allStations: Station[]` — a small local fallback dataset used when network calls fail or for quick local dev.
+    - Concept: One module to own network calls, error handling, caching, and any station-related transformations. Call `fetchStations()` from your components (e.g., inside `useEffect`) instead of using a global `allStations` constant so the rest of the app doesn't need to change if the backend or auth changes.
 
 2. The "Browser Storage Service"
-    - File: `src/App.tsx`
-    - Code Block: The `storage` object with `getFavoriteIds` and `setFavoriteIds` methods.
-    - Concept: This acts as our database layer. It abstracts away the implementation details of how we're storing data (in this case, `localStorage`). If we decided to store favorites in a different way (like `sessionStorage` or an online database like Firebase), we would only need to update the methods inside this `storage` object. The rest of the application wouldn't need to change.
+    - File: `src/lib/storage.ts`
+    - Exports:
+        - `getFavoriteIds(): Set<string>` — returns the favorited station IDs as a Set
+        - `setFavoriteIds(ids: Set<string>): void` — persists the Set of IDs
+        - `getFavorites(): string[]` — back-compat helper that returns an array
+        - `setFavorites(list: string[]): void` — back-compat helper that accepts an array
+    - Notes:
+        - Stores under the key `rr_favorites_v1`; reads legacy `radio-favorites` for migration and clears it on save.
+    - Concept: This module is the data layer for favorites. If we switch storage (e.g., `sessionStorage` or a remote DB), we update only this file; the rest of the app remains unchanged.
 
 3. The "Recommendation Service"
     - File: `src/App.tsx`
