@@ -25,6 +25,11 @@ const StarIcon = ({ className, isFilled }: { className?: string; isFilled: boole
 // This is the heart of our application. It brings together the data,
 // storage, state, and UI.
 //===========//
+// Helper to detect if fallback stations are being used
+function isFallbackStations(stations: Station[]): boolean {
+  return stations.length > 0 && !stations[0].stationUuid;
+}
+
 export default function App() {
   // --- STATE MANAGEMENT --- //
   const [allStations, setAllStations] = useState<Station[]>([]);
@@ -46,9 +51,8 @@ export default function App() {
       .then((list) => {
         if (mounted) {
           setAllStations(list);
-          // Detect if we're using fallback stations (they don't have stationUuid)
-          const usingFallback = list.length > 0 && !list[0].stationUuid;
-          setIsUsingFallback(usingFallback);
+          // Detect if we're using fallback stations
+          setIsUsingFallback(isFallbackStations(list));
         }
       })
       .catch((e) => console.error("Failed to load stations", e))
@@ -158,8 +162,7 @@ export default function App() {
                   try {
                     const stations = await refreshStations();
                     setAllStations(stations);
-                    const usingFallback = stations.length > 0 && !stations[0].stationUuid;
-                    setIsUsingFallback(usingFallback);
+                    setIsUsingFallback(isFallbackStations(stations));
                   } catch (e) {
                     console.error("Manual refresh failed:", e);
                   } finally {
