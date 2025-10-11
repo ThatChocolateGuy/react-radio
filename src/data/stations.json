@@ -40,5 +40,33 @@
     "url": "http://ice1.somafm.com/lush-128-mp3",
     "genre": "chillout",
     "country": "US"
+  },
+  {
+    "id": "soma-thistle",
+    "name": "SomaFM — Thistle Radio",
+    "url": "http://ice1.somafm.com/thistle-128-mp3",
+    "genre": "celtic",
+    "country": "US"
+  },
+  {
+    "id": "soma-folkfwd",
+    "name": "SomaFM — Folk Forward",
+    "url": "http://ice1.somafm.com/folkfwd-128-mp3",
+    "genre": "folk",
+    "country": "US"
+  },
+  {
+    "id": "soma-bootliquor",
+    "name": "SomaFM — Boot Liquor",
+    "url": "http://ice1.somafm.com/bootliquor-128-mp3",
+    "genre": "americana",
+    "country": "US"
+  },
+  {
+    "id": "soma-thetrip",
+    "name": "SomaFM — The Trip",
+    "url": "http://ice1.somafm.com/thetrip-128-mp3",
+    "genre": "progressive",
+    "country": "US"
   }
 ]

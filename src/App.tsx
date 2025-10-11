@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { fetchStations, getResolvedStreamUrl } from './services/stationService';
+import { fetchStations, getResolvedStreamUrl, refreshStations } from './services/stationService';
 import type { ServiceStation } from './types';
 import { getFavoriteIds as storageGetFavoriteIds, setFavoriteIds as storageSetFavoriteIds } from './lib/storage';
 
@@ -31,6 +31,7 @@ export default function App() {
   const [loadingStations, setLoadingStations] = useState(true);
   const [currentStation, setCurrentStation] = useState<Station | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   // We initialize favorites by reading from our "storage service".
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(storageGetFavoriteIds());
 
@@ -43,7 +44,12 @@ export default function App() {
     setLoadingStations(true);
     fetchStations()
       .then((list) => {
-        if (mounted) setAllStations(list);
+        if (mounted) {
+          setAllStations(list);
+          // Detect if we're using fallback stations (they don't have stationUuid)
+          const usingFallback = list.length > 0 && !list[0].stationUuid;
+          setIsUsingFallback(usingFallback);
+        }
       })
       .catch((e) => console.error("Failed to load stations", e))
       .finally(() => mounted && setLoadingStations(false));
@@ -141,6 +147,32 @@ export default function App() {
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 tracking-wider">React Radio</h1>
           <p className="text-gray-400 mt-2">Your simple station for streaming</p>
+          {isUsingFallback && (
+            <div className="mt-4 p-3 bg-amber-900/50 border border-amber-700 rounded-lg flex items-center justify-between">
+              <p className="text-amber-200 text-sm">
+                📻 Currently showing curated stations. Radio directory API will retry automatically.
+              </p>
+              <button
+                onClick={async () => {
+                  setLoadingStations(true);
+                  try {
+                    const stations = await refreshStations();
+                    setAllStations(stations);
+                    const usingFallback = stations.length > 0 && !stations[0].stationUuid;
+                    setIsUsingFallback(usingFallback);
+                  } catch (e) {
+                    console.error("Manual refresh failed:", e);
+                  } finally {
+                    setLoadingStations(false);
+                  }
+                }}
+                disabled={loadingStations}
+                className="px-3 py-1 bg-amber-600 hover:bg-amber-500 disabled:bg-amber-800 text-amber-100 text-xs rounded transition-colors"
+              >
+                {loadingStations ? "Checking..." : "Try Now"}
+              </button>
+            </div>
+          )}
         </header>
 
         <main className="grid grid-cols-1 md:grid-cols-3 gap-8">

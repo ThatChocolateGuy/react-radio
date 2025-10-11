@@ -118,20 +118,50 @@ export async function getResolvedStreamUrl(stationUuid: string): Promise<string 
   return null; // All endpoints failed
 }
 
+// Track API health for smart retry logic
+let lastApiCheck = 0;
+let apiIsHealthy = false;
+const API_RETRY_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Force a fresh attempt to fetch from Radio Browser API, bypassing the retry interval.
+ * Useful for manual refresh or when user indicates they want to try again.
+ */
+export async function refreshStations(): Promise<ServiceStation[]> {
+  lastApiCheck = 0; // Reset timer to force API attempt
+  return fetchStations();
+}
+
 export async function fetchStations(): Promise<ServiceStation[]> {
-  try {
-    const remote = await fetchRemoteStations();
-    const mapped = remote
-      .map((station, index) => mapRemoteToService(station, index))
-      .filter((s) => typeof s.streamUrl === "string" && s.streamUrl.length > 0);
-    if (mapped.length > 0) return mapped;
-  } catch (err) {
-    // fall through to bundled data
+  const now = Date.now();
+  const shouldRetryApi = (now - lastApiCheck) > API_RETRY_INTERVAL;
+  
+  // Try remote API if we haven't checked recently or if it was working last time
+  if (shouldRetryApi || apiIsHealthy) {
+    try {
+      const remote = await fetchRemoteStations();
+      const mapped = remote
+        .map((station, index) => mapRemoteToService(station, index))
+        .filter((s) => typeof s.streamUrl === "string" && s.streamUrl.length > 0);
+      
+      if (mapped.length > 0) {
+        lastApiCheck = now;
+        apiIsHealthy = true;
+        console.log(`Successfully fetched ${mapped.length} stations from Radio Browser API`);
+        return mapped;
+      }
+    } catch (err) {
+      lastApiCheck = now;
+      apiIsHealthy = false;
+      console.warn("Radio Browser API unavailable, using fallback stations:", err);
+    }
   }
 
   // Fallback to the bundled static stations included with the app
   try {
-    return staticStations.map(mapStaticToService);
+    const fallbackStations = staticStations.map(mapStaticToService);
+    console.log(`Using ${fallbackStations.length} fallback stations`);
+    return fallbackStations;
   } catch (err) {
     console.error("Failed to map static stations fallback", err);
     return [];
