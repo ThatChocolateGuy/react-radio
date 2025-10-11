@@ -48,7 +48,7 @@ function mapRemoteToService(s: RemoteStation, idx: number): ServiceStation {
   const stationUuid = s.stationuuid;
   const id = stationUuid || s.id || String(idx);
   const name = s.name || s.stationname || "Unknown";
-  // Prefer url_resolved as it's already been resolved by Radio Browser and more likely to work
+  // Prefer url_resolved as it's already been resolved by Radio Browser and more likely to work  
   // This provides better stream URLs that are less likely to have CORS issues
   const streamUrl =
     s.url_resolved || s.url || s.stream_url || s.streamUrl || "";
@@ -60,7 +60,12 @@ function mapRemoteToService(s: RemoteStation, idx: number): ServiceStation {
     `https://placehold.co/120x120/1a1a1a/ffffff?text=${encodeURIComponent(
       (name || "").slice(0, 2)
     )}`;
-  return { id, name, streamUrl, genre, favicon, stationUuid };
+  
+  const result: ServiceStation = { id, name, streamUrl, genre, favicon };
+  if (stationUuid) {
+    result.stationUuid = stationUuid;
+  }
+  return result;
 }
 
 function mapStaticToService(s: StaticStation): ServiceStation {
@@ -73,7 +78,7 @@ function mapStaticToService(s: StaticStation): ServiceStation {
       `https://placehold.co/120x120/1a1a1a/ffffff?text=${encodeURIComponent(
         (s.name || "").slice(0, 2)
       )}`,
-    stationUuid: undefined, // Static stations don't have Radio Browser UUIDs
+    // Static stations don't have Radio Browser UUIDs, so we omit this field
   };
 }
 

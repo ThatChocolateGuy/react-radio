@@ -27,7 +27,7 @@ const StarIcon = ({ className, isFilled }: { className?: string; isFilled: boole
 //===========//
 // Helper to detect if fallback stations are being used
 function isFallbackStations(stations: Station[]): boolean {
-  return stations.length > 0 && !stations[0].stationUuid;
+  return stations.length > 0 && stations[0].stationUuid === undefined;
 }
 
 export default function App() {
@@ -252,7 +252,7 @@ interface StationListProps {
     onSelectStation: (station: Station) => void;
     onToggleFavorite: (stationId: string) => void;
     favoriteIds: Set<string>;
-    currentStationId?: string | null;
+    currentStationId?: string | undefined;
 }
 
 const StationList = ({ title, stations, onSelectStation, onToggleFavorite, favoriteIds, currentStationId }: StationListProps) => (
