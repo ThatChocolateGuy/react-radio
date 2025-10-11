@@ -7,7 +7,7 @@ import { RemoteStation, StaticStation, ServiceStation } from "../types";
 const staticStations: StaticStation[] = staticStationsData as StaticStation[];
 
 // Try multiple Radio Browser API servers for better reliability
-// Updated with verified working endpoints (as of Oct 2025)
+// Endpoints are periodically verified to ensure availability
 const RADIO_BROWSER_ENDPOINTS = [
   "https://fi1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
   "https://de2.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
@@ -173,3 +173,5 @@ export async function fetchStations(): Promise<ServiceStation[]> {
     return [];
   }
 }
+
+
