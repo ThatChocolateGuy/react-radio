@@ -73,7 +73,7 @@ function mapStaticToService(s: StaticStation): ServiceStation {
       `https://placehold.co/120x120/1a1a1a/ffffff?text=${encodeURIComponent(
         (s.name || "").slice(0, 2)
       )}`,
-    stationUuid: undefined, // Static stations don't have Radio Browser UUIDs
+    stationUuid: null, // Static stations don't have Radio Browser UUIDs
   };
 }
 
