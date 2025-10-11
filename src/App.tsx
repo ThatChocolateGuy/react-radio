@@ -92,9 +92,13 @@ export default function App() {
         }
         
         if (audio.src !== streamUrl) {
+          console.log("Loading stream:", streamUrl);
           audio.src = streamUrl;
         }
-        audio.play().catch(e => console.error("Audio playback error:", e));
+        audio.play().catch(e => {
+          console.error("Audio playback error:", e);
+          console.error("Stream URL that failed:", streamUrl);
+        });
       };
       
       loadStream();
@@ -200,7 +204,7 @@ export default function App() {
         </footer>
       )}
 
-      <audio ref={audioRef}></audio>
+      <audio ref={audioRef} crossOrigin="anonymous"></audio>
     </div>
   );
 }

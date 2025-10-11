@@ -2,43 +2,43 @@
   {
     "id": "soma-groove",
     "name": "SomaFM — Groove Salad",
-    "url": "https://icecast.somafm.com/groovesalad",
+    "url": "http://ice1.somafm.com/groovesalad-256-mp3",
     "genre": "chillout",
     "country": "US"
   },
   {
     "id": "soma-drone",
     "name": "SomaFM — Drone Zone",
-    "url": "https://icecast.somafm.com/dronezone",
+    "url": "http://ice1.somafm.com/dronezone-256-mp3",
     "genre": "ambient",
     "country": "US"
   },
   {
-    "id": "jazz24",
-    "name": "KPLU/Jazz24",
-    "url": "https://live.wostreaming.net/direct/ppm-jazz24mp3-ibc1",
-    "genre": "jazz",
+    "id": "radio-paradise",
+    "name": "Radio Paradise",
+    "url": "http://stream.radioparadise.com/mp3-192",
+    "genre": "eclectic",
     "country": "US"
   },
   {
-    "id": "bbc-radio3",
-    "name": "BBC Radio 3",
-    "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_radio_three",
-    "genre": "classical",
-    "country": "UK"
+    "id": "soma-indiepop",
+    "name": "SomaFM — Indie Pop Rocks",
+    "url": "http://ice1.somafm.com/indiepop-128-mp3",
+    "genre": "indie",
+    "country": "US"
   },
   {
-    "id": "electro",
-    "name": "Electro Beats",
-    "url": "https://icecast.somafm.com/secret-agent",
+    "id": "soma-secretagent",
+    "name": "SomaFM — Secret Agent",
+    "url": "http://ice1.somafm.com/secretagent-128-mp3",
     "genre": "electronic",
     "country": "US"
   },
   {
-    "id": "indie",
-    "name": "Indie Mix",
-    "url": "https://icecast.somafm.com/indiepop",
-    "genre": "indie",
+    "id": "soma-lush",
+    "name": "SomaFM — Lush",
+    "url": "http://ice1.somafm.com/lush-128-mp3",
+    "genre": "chillout",
     "country": "US"
   }
 ]

@@ -6,28 +6,37 @@ import { RemoteStation, StaticStation, ServiceStation } from "../types";
 
 const staticStations: StaticStation[] = staticStationsData as StaticStation[];
 
-const RADIO_BROWSER_ENDPOINT =
-  "https://de1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true";
+// Try multiple Radio Browser API servers for better reliability
+const RADIO_BROWSER_ENDPOINTS = [
+  "https://at1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+  "https://de1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+  "https://nl1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+];
 
 async function fetchRemoteStations(): Promise<RemoteStation[]> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-  try {
-    const res = await fetch(RADIO_BROWSER_ENDPOINT, {
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (err) {
-    clearTimeout(timeout);
-    console.warn(
-      "Radio Browser fetch failed, falling back to bundled stations:",
-      err
-    );
-    throw err;
+  // Try each endpoint until one works
+  for (const endpoint of RADIO_BROWSER_ENDPOINTS) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const res = await fetch(endpoint, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch (err) {
+      clearTimeout(timeout);
+      console.warn(`Radio Browser endpoint ${endpoint} failed:`, err);
+      // Continue to next endpoint
+    }
   }
+  
+  // If all endpoints failed, throw an error to trigger fallback
+  throw new Error("All Radio Browser endpoints failed");
 }
 
 function mapRemoteToService(s: RemoteStation, idx: number): ServiceStation {
@@ -59,6 +68,7 @@ function mapStaticToService(s: StaticStation): ServiceStation {
       `https://placehold.co/120x120/1a1a1a/ffffff?text=${encodeURIComponent(
         (s.name || "").slice(0, 2)
       )}`,
+    stationUuid: undefined, // Static stations don't have Radio Browser UUIDs
   };
 }
 
@@ -74,25 +84,38 @@ function mapStaticToService(s: StaticStation): ServiceStation {
 export async function getResolvedStreamUrl(stationUuid: string): Promise<string | null> {
   if (!stationUuid) return null;
   
-  try {
-    const clickEndpoint = `https://de1.api.radio-browser.info/json/url/${stationUuid}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const res = await fetch(clickEndpoint, {
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    
-    if (!res.ok) return null;
-    
-    const data = await res.json();
-    // The API returns an object with a 'url' property containing the resolved stream URL
-    return data.url || null;
-  } catch (err) {
-    console.warn(`Failed to resolve stream URL for station ${stationUuid}:`, err);
-    return null;
+  // Try the same base domains that we use for station fetching
+  const baseDomains = [
+    "https://at1.api.radio-browser.info",
+    "https://de1.api.radio-browser.info",  
+    "https://nl1.api.radio-browser.info",
+  ];
+  
+  for (const baseDomain of baseDomains) {
+    try {
+      const clickEndpoint = `${baseDomain}/json/url/${stationUuid}`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      
+      const res = await fetch(clickEndpoint, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      
+      if (!res.ok) continue; // Try next endpoint
+      
+      const data = await res.json();
+      // The API returns an object with a 'url' property containing the resolved stream URL
+      if (data.url) {
+        return data.url;
+      }
+    } catch (err) {
+      console.warn(`Failed to resolve stream URL for station ${stationUuid} via ${baseDomain}:`, err);
+      // Continue to next endpoint
+    }
   }
+  
+  return null; // All endpoints failed
 }
 
 export async function fetchStations(): Promise<ServiceStation[]> {
