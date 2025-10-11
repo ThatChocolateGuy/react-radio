@@ -7,15 +7,18 @@ import { RemoteStation, StaticStation, ServiceStation } from "../types";
 const staticStations: StaticStation[] = staticStationsData as StaticStation[];
 
 // Try multiple Radio Browser API servers for better reliability
+// Updated with verified working endpoints (as of Oct 2025)
 const RADIO_BROWSER_ENDPOINTS = [
-  "https://at1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+  "https://fi1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+  "https://de2.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
   "https://de1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
-  "https://nl1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
+  "https://at1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true",
 ];
 
 async function fetchRemoteStations(): Promise<RemoteStation[]> {
   // Try each endpoint until one works
   for (const endpoint of RADIO_BROWSER_ENDPOINTS) {
+    console.log(`Trying Radio Browser endpoint: ${endpoint}`);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
@@ -23,14 +26,16 @@ async function fetchRemoteStations(): Promise<RemoteStation[]> {
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      console.log(`Response status for ${endpoint}: ${res.status}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
+        console.log(`✅ Success! Got ${data.length} stations from ${endpoint}`);
         return data;
       }
     } catch (err) {
       clearTimeout(timeout);
-      console.warn(`Radio Browser endpoint ${endpoint} failed:`, err);
+      console.warn(`❌ Radio Browser endpoint ${endpoint} failed:`, err);
       // Continue to next endpoint
     }
   }
@@ -86,9 +91,10 @@ export async function getResolvedStreamUrl(stationUuid: string): Promise<string 
   
   // Try the same base domains that we use for station fetching
   const baseDomains = [
-    "https://at1.api.radio-browser.info",
+    "https://fi1.api.radio-browser.info",
+    "https://de2.api.radio-browser.info",
     "https://de1.api.radio-browser.info",  
-    "https://nl1.api.radio-browser.info",
+    "https://at1.api.radio-browser.info",
   ];
   
   for (const baseDomain of baseDomains) {
