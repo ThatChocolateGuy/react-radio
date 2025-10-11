@@ -95,13 +95,14 @@ useEffect(() => {
 
 ### Favorites Management
 ```tsx
+import { getFavoriteIds, setFavoriteIds as setFavoriteIdsToStorage } from './lib/storage';
 // Use Set-based API for better performance
 const [favoriteIds, setFavoriteIds] = useState<Set<string>>(getFavoriteIds());
 const handleToggle = (id: string) => {
   const newSet = new Set(favoriteIds);
   newSet.has(id) ? newSet.delete(id) : newSet.add(id);
   setFavoriteIds(newSet);
-  setFavoriteIds(newSet); // Persist to storage
+  setFavoriteIdsToStorage(newSet); // Persist to storage
 };
 ```
 
