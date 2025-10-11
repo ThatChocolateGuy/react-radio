@@ -60,7 +60,7 @@ export default function RadioPlayer({ station }: { station: Station | null }) {
           />
         </label>
       </div>
-      <div className="notes">Note: Streaming requires a valid stream URL and CORS permitting playback.</div>
+      <div className="notes">Note: Streaming quality depends on the station&apos;s stream availability.</div>
     </div>
   );
 }
