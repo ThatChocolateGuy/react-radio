@@ -7,7 +7,7 @@ import { RemoteStation, StaticStation, ServiceStation } from "../types";
 const staticStations: StaticStation[] = staticStationsData as StaticStation[];
 
 const RADIO_BROWSER_ENDPOINT =
-  "https://de1.api.radio-browser.info/json/stations?limit=60&hidebroken=true";
+  "https://de1.api.radio-browser.info/json/stations?limit=60&hidebroken=true&has_extended_info=true";
 
 async function fetchRemoteStations(): Promise<RemoteStation[]> {
   const controller = new AbortController();
@@ -31,8 +31,11 @@ async function fetchRemoteStations(): Promise<RemoteStation[]> {
 }
 
 function mapRemoteToService(s: RemoteStation, idx: number): ServiceStation {
-  const id = s.stationuuid || s.id || String(idx);
+  const stationUuid = s.stationuuid;
+  const id = stationUuid || s.id || String(idx);
   const name = s.name || s.stationname || "Unknown";
+  // Prefer url_resolved as it's already been resolved by Radio Browser and more likely to work
+  // This provides better stream URLs that are less likely to have CORS issues
   const streamUrl =
     s.url_resolved || s.url || s.stream_url || s.streamUrl || "";
   const genre =
@@ -43,7 +46,7 @@ function mapRemoteToService(s: RemoteStation, idx: number): ServiceStation {
     `https://placehold.co/120x120/1a1a1a/ffffff?text=${encodeURIComponent(
       (name || "").slice(0, 2)
     )}`;
-  return { id, name, streamUrl, genre, favicon };
+  return { id, name, streamUrl, genre, favicon, stationUuid };
 }
 
 function mapStaticToService(s: StaticStation): ServiceStation {
@@ -57,6 +60,39 @@ function mapStaticToService(s: StaticStation): ServiceStation {
         (s.name || "").slice(0, 2)
       )}`,
   };
+}
+
+
+
+/**
+ * Gets the resolved stream URL for a station using Radio Browser's click endpoint.
+ * This endpoint:
+ * 1. Resolves redirects and provides the actual stream URL
+ * 2. Increments the station's click count (helps the station)
+ * 3. Often provides URLs with better CORS support
+ */
+export async function getResolvedStreamUrl(stationUuid: string): Promise<string | null> {
+  if (!stationUuid) return null;
+  
+  try {
+    const clickEndpoint = `https://de1.api.radio-browser.info/json/url/${stationUuid}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    
+    const res = await fetch(clickEndpoint, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    
+    if (!res.ok) return null;
+    
+    const data = await res.json();
+    // The API returns an object with a 'url' property containing the resolved stream URL
+    return data.url || null;
+  } catch (err) {
+    console.warn(`Failed to resolve stream URL for station ${stationUuid}:`, err);
+    return null;
+  }
 }
 
 export async function fetchStations(): Promise<ServiceStation[]> {

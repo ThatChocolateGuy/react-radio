@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { fetchStations } from './services/stationService';
+import { fetchStations, getResolvedStreamUrl } from './services/stationService';
 import type { ServiceStation } from './types';
 import { getFavoriteIds as storageGetFavoriteIds, setFavoriteIds as storageSetFavoriteIds } from './lib/storage';
 
@@ -78,10 +78,26 @@ export default function App() {
     if (!audio) return;
 
     if (isPlaying && currentStation) {
-      if (audio.src !== currentStation.streamUrl) {
-        audio.src = currentStation.streamUrl;
-      }
-      audio.play().catch(e => console.error("Audio playback error:", e));
+      // Try to get a resolved stream URL from Radio Browser's click endpoint
+      // This provides better CORS support and increments the station's click count
+      const loadStream = async () => {
+        let streamUrl = currentStation.streamUrl;
+        
+        // If we have a stationUuid, try to get the resolved URL from Radio Browser
+        if (currentStation.stationUuid) {
+          const resolvedUrl = await getResolvedStreamUrl(currentStation.stationUuid);
+          if (resolvedUrl) {
+            streamUrl = resolvedUrl;
+          }
+        }
+        
+        if (audio.src !== streamUrl) {
+          audio.src = streamUrl;
+        }
+        audio.play().catch(e => console.error("Audio playback error:", e));
+      };
+      
+      loadStream();
     } else {
       audio.pause();
     }
@@ -184,7 +200,7 @@ export default function App() {
         </footer>
       )}
 
-      <audio ref={audioRef} crossOrigin="anonymous"></audio>
+      <audio ref={audioRef}></audio>
     </div>
   );
 }

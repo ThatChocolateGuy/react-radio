@@ -14,6 +14,7 @@ export type ServiceStation = {
   streamUrl: string;
   genre: string;
   favicon: string;
+  stationUuid?: string; // UUID from Radio Browser for click tracking
 };
 
 export interface RemoteStation {
