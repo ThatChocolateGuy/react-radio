@@ -102,7 +102,9 @@ export default function App() {
         }
         
         if (audio.src !== streamUrl) {
-          console.log("Loading stream:", streamUrl);
+          if (process.env.NODE_ENV === 'development') {
+            console.log("Loading stream:", streamUrl);
+          }
           audio.src = streamUrl;
         }
         audio.play().catch(e => {
