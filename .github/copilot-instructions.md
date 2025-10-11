@@ -113,7 +113,13 @@ useEffect(() => {
   const audio = audioRef.current;
   if (isPlaying && currentStation) {
     audio.src = currentStation.streamUrl;
-    audio.play().catch(console.error);
+    const onCanPlay = () => {
+      audio.play().catch(console.error);
+    };
+    audio.addEventListener('canplay', onCanPlay, { once: true });
+    return () => {
+      audio.removeEventListener('canplay', onCanPlay);
+    };
   } else {
     audio.pause();
   }
